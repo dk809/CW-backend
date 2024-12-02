@@ -1,0 +1,19 @@
+{
+  "name": "lbs-main",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start2": "nodemon indextest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "mongodb": "^6.10.0",
+    "properties-reader": "^2.3.0"
+  },
+  "description": ""
+}
