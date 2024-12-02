@@ -130,3 +130,32 @@ app.post('/order/', async function (req, res) {
         return res.status(500).json({ Detail: "Internal server error" });
     }
 });
+
+app.get('/collections/:collectionName', async function (req, res, next) {
+    console.log('collection2', req.query)
+    try {
+        // connectDB()
+        // console.log("executing1");
+        // const database = client.db("coursework")
+        const collection = db1.collection(req.params.collectionName)
+        const results = await collection.find({}).toArray();
+        // const results = await 
+
+        // console.log('Retrive data:', results);
+        // console.log(client.db("coursework"))
+
+        // client.connect()
+
+        const payload = results.map(item => ({ ...item, id: item._id }))
+        return res.status(200).json(payload)
+        // res.send(client.db().databaseName)
+        // res.send(db1.db().databaseName);
+        // console.log(client.db().databaseName)
+
+    }
+    catch (err) {
+        console.error('Error fetching docs', err.message);
+        next(err);
+    }
+
+});
