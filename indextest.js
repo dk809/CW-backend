@@ -48,3 +48,13 @@ async function connectDB() {
 }
 
 connectDB(); 
+
+app.get('/search', async function (req, res) {
+    const collection = db1.collection('lessons')
+    const results = await collection.find({
+        subject: { $regex: `^${req.query.search_term}`, $options: 'i' }
+    }).toArray();
+    const payload = results.map(item => ({ ...item, id: item._id }))
+    return res.status(200).json(payload)
+
+});
