@@ -46,3 +46,5 @@ async function connectDB() {
         console.error(err.message)
     }
 }
+
+connectDB(); 
