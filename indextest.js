@@ -19,3 +19,11 @@ const dbName = properties.get('db.name');
 const dbUser = properties.get('db.user');
 const dbPassword = properties.get('db.password');
 const dbParams = properties.get('db.params');
+
+const { MongoClient, ServerApiVersion, ObjectId, Collection } = require("mongodb");
+// MongoDB connection URL
+const uri = `${dbPrefix}${dbUser}:${dbPassword}${dbHost}${dbParams}`;
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
+
+let db1;//declare variable
