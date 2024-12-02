@@ -27,3 +27,10 @@ const uri = `${dbPrefix}${dbUser}:${dbPassword}${dbHost}${dbParams}`;
 const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
 
 let db1;//declare variable
+
+app.use(express.static('public'))
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
