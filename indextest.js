@@ -58,3 +58,75 @@ app.get('/search', async function (req, res) {
     return res.status(200).json(payload)
 
 });
+
+
+
+app.post('/order/', async function (req, res) {
+    try {
+        console.log(req.body);
+
+        // Extract collections
+        const collection = db1.collection('order');
+        const collectionL = db1.collection('lessons');
+
+        // Validate input
+        if (!req.body.items || !Array.isArray(req.body.items)) {
+            return res.status(400).json({ Detail: "Invalid order format" });
+        }
+
+        // Fetch all lesson details in a single query
+        const itemIds = req.body.items.map(item => new ObjectId(item.id));
+        const lessonsData = await collectionL.find({ _id: { $in: itemIds } }).toArray();
+
+        // Map lesson data by ID for easy lookup
+        const lessonsMap = lessonsData.reduce((map, lesson) => {
+            map[lesson._id.toString()] = lesson;
+            return map;
+        }, {});
+
+        // Validate and prepare lessons for checkout
+        const updatedLessons = [];
+        for (const item of req.body.items) {
+            const lesson = lessonsMap[item.id];
+
+            if (!lesson) {
+                return res.status(400).json({ Detail: `Lesson with ID ${item.id} not found` });
+            }
+
+            if (lesson.spaces < item.quantity) {
+                return res.status(400).json({
+                    Detail: `Not enough spaces for lesson with ID ${item.id}`,
+                    AvailableSpaces: lesson.spaces,
+                });
+            }
+
+            // Reduce spaces
+            updatedLessons.push({
+                id: item.id,
+                newSpaces: lesson.spaces - item.quantity,
+            });
+        }
+
+        // Insert the order into the `order` collection
+        const orderData = {
+            ...req.body,
+            createdAt: new Date(),
+        };
+        const orderResult = await collection.insertOne(orderData);
+
+        // Update spaces for all lessons in a single bulk operation
+        const bulkUpdates = updatedLessons.map(item => ({
+            updateOne: {
+                filter: { _id: new ObjectId(item.id) },
+                update: { $set: { spaces: item.newSpaces } },
+            },
+        }));
+        await collectionL.bulkWrite(bulkUpdates);
+
+        // Respond with success
+        return res.status(200).json({ orderId: orderResult.insertedId, message: "Order placed successfully" });
+    } catch (error) {
+        console.error("Error processing order:", error);
+        return res.status(500).json({ Detail: "Internal server error" });
+    }
+});
