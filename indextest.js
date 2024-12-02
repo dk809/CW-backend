@@ -186,3 +186,65 @@ app.post('/collections/:collectionName', async function (req, res, next) {
     }
 
 });
+
+
+app.delete('/collections/:collectionName/:id', async function (req, res, next) {
+
+    try {
+        connectDB()
+        //  const database = client.db("coursework")
+        const collection = db1.collection(req.params.collectionName)
+        const results = await collection.deleteOne({ _id: new ObjectId(req.params.id) });
+        // const results = await 
+
+        console.log('Deleted data: ', results);
+        // console.log(client.db("coursework"))
+
+        // client.connect()
+
+        res.json(results.deletedCount === 1) ? { msg: "success" } : { msg: "error" };
+        // res.send(client.db().databaseName)
+        // res.send(db1.db().databaseName);
+        // console.log(client.db().databaseName)
+
+    }
+    catch (err) {
+        console.error('Error fetching docs', err.message);
+        next(err);
+    }
+
+});
+
+app.put('/collections/:collectionName/:id', async function (req, res, next) {
+    try {
+        connectDB()
+        // const database = client.db("coursework")
+        const collection = db1.collection(req.params.collectionName)
+        const results = await collection.updateOne({ _id: new ObjectId(req.params.id) },
+            { $set: req.body });
+        // const results = await 
+
+        console.log('Updated: ', results);
+        // console.log(client.db("coursework"))
+
+        // client.connect()
+
+        res.json(results.matchedCount === 1) ? { msg: "success" } : { msg: "error" };
+        // res.send(client.db().databaseName)
+        // res.send(db1.db().databaseName);
+        // console.log(client.db().databaseName)
+
+    }
+    catch (err) {
+        console.error('Error fetching docs', err.message);
+        next(err);
+    }
+
+});
+
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    res.status(500).json({ error: 'An error occurred' });
+});
+
+
