@@ -8,7 +8,7 @@ let PropertiesReader = require("properties-reader");
 let propertiesPath = path.resolve(__dirname, "dbconnections.properties");
 let properties = PropertiesReader(propertiesPath);
 
-
+app.use(cors())
 const dbPrefix = properties.get('db.prefix');
 const dbHost = properties.get('db.host');
 const dbName = properties.get('db.name');
