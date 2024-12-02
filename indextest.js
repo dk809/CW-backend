@@ -159,3 +159,30 @@ app.get('/collections/:collectionName', async function (req, res, next) {
     }
 
 });
+
+
+app.post('/collections/:collectionName', async function (req, res, next) {
+    try {
+        connectDB()
+        // const database = client.db("coursework")
+        const collection = db1.collection(req.params.collectionName)
+        const results = await collection.insertOne(req.body);
+        // const results = await 
+
+        console.log('Recieved request: ', req.body);
+        console.log(client.db("coursework"))
+
+        // client.connect()
+
+        res.json(results);
+        // res.send(client.db().databaseName)
+        // res.send(db1.db().databaseName);
+        // console.log(client.db().databaseName)
+
+    }
+    catch (err) {
+        console.error('Error fetching docs', err.message);
+        next(err);
+    }
+
+});
