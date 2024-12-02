@@ -22,11 +22,11 @@ const uri = `${dbPrefix}${dbUser}:${dbPassword}${dbHost}${dbParams}`;
 
 const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
 
-let db1;//declare variable
+let db1;
 
 app.use(express.static('public'))
 
-// Start the server
+
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
@@ -36,7 +36,7 @@ async function connectDB() {
         client.connect();
         console.log('Connected to MongoDB');
         db1 = client.db(dbName);
-        // console.log(db1)
+       
     } catch (err) {
         console.error('MongoDB connection error:', err);
         console.error(err.message)
@@ -61,26 +61,26 @@ app.post('/order/', async function (req, res) {
     try {
         console.log(req.body);
 
-        // Extract collections
+        
         const collection = db1.collection('order');
         const collectionL = db1.collection('lessons');
 
-        // Validate input
+       
         if (!req.body.items || !Array.isArray(req.body.items)) {
             return res.status(400).json({ Detail: "Invalid order format" });
         }
 
-        // Fetch all lesson details in a single query
+        
         const itemIds = req.body.items.map(item => new ObjectId(item.id));
         const lessonsData = await collectionL.find({ _id: { $in: itemIds } }).toArray();
 
-        // Map lesson data by ID for easy lookup
+        
         const lessonsMap = lessonsData.reduce((map, lesson) => {
             map[lesson._id.toString()] = lesson;
             return map;
         }, {});
 
-        // Validate and prepare lessons for checkout
+       
         const updatedLessons = [];
         for (const item of req.body.items) {
             const lesson = lessonsMap[item.id];
@@ -96,7 +96,7 @@ app.post('/order/', async function (req, res) {
                 });
             }
 
-            // Reduce spaces
+           
             updatedLessons.push({
                 id: item.id,
                 newSpaces: lesson.spaces - item.quantity,
@@ -117,7 +117,7 @@ app.post('/order/', async function (req, res) {
         }));
         await collectionL.bulkWrite(bulkUpdates);
 
-        // Respond with success
+        
         return res.status(200).json({ orderId: orderResult.insertedId, message: "Order placed successfully" });
     } catch (error) {
         console.error("Error processing order:", error);
