@@ -11,3 +11,11 @@ let PropertiesReader = require("properties-reader");
 // Load properties from the file
 let propertiesPath = path.resolve(__dirname, "dbconnections.properties");
 let properties = PropertiesReader(propertiesPath);
+
+// Extract values from the properties file
+const dbPrefix = properties.get('db.prefix');
+const dbHost = properties.get('db.host');
+const dbName = properties.get('db.name');
+const dbUser = properties.get('db.user');
+const dbPassword = properties.get('db.password');
+const dbParams = properties.get('db.params');
